@@ -1,5 +1,7 @@
+<!--Компонент отвечает за карточку одного товара-->
 <template>
     <div class="col-6 pl-2">
+<!--        При нажатии на товар отображается его расширенная версия-->
         <div @click="showModal"
              style="cursor: pointer"
              class="card text-center border-0 shadow-sm mb-3 bg-white rounded-lg">
@@ -45,11 +47,6 @@
 
     export default {
         name: "Product",
-        data() {
-            return {
-                visible: false
-            }
-        },
         props: {
             product: {
                 type: Object,
@@ -60,15 +57,10 @@
             buyProduct() {
                 alert(`Куплен товар ${this.product.name}`)
             },
+            //Метод для отображения расширенной карточки товара
             showModal() {
                 this.$emit('show-modal', this.product.id)
             }
         }
     }
 </script>
-
-<style scoped>
-
-</style>
-
-<!--                        @click.prevent="buyProduct"-->

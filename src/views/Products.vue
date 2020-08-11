@@ -1,6 +1,7 @@
 <template>
     <div class="container-fluid">
         <h1>Список товаров</h1>
+        <!--        Форма фильтрации-->
         <div class="row">
             <div class="col-12">
                 <div class="card">
@@ -38,8 +39,9 @@
                                     </select>
                                 </div>
                                 <div class="text-right">
-<!--                                    Кнопка для сброса фильтров-->
-<!--                                    Ссылается на статус isFiltered, который позволяет узнать, отсортированы ли товары-->
+                                    <!--  Кнопка для сброса фильтров  -->
+                                    <!--  Ссылается на статус isFiltered, который позволяет узнать, отсортированы ли товары  -->
+                                    <!--  Если товары не отсортированы - кнопка не активна  -->
                                     <button
                                             :disabled='!filteredProducts.isFiltered'
                                             @click="removeFilters"
@@ -53,16 +55,21 @@
             </div>
         </div>
 
-<!--        Если товары имеются - отображаем их список-->
+        <!--        Если товары имеются - отображаем их список-->
+<!--        show-modal - Лисенер для отображения расширенной карточки товара-->
         <ProductList
                 v-if="filteredProducts._products.length"
                 v-bind:products="filteredProducts._products"
                 @show-modal="showModal"
         />
+<!--        Если товары не найдены - выводим соответствующее сообщение-->
         <div v-else class="alert alert-light" role="alert">Товары не найдены</div>
+<!--        Расширенная карточка товара-->
+<!--        ProductList имеет лисенер для её отображения-->
+<!--        hide-modal - лисенер для сокрытия карточки-->
         <ProductModal
-                v-if="modalWindow.show"
-                v-bind:product="products[modalWindow.id -1]"
+                v-if="productModalWindow.show"
+                v-bind:product="products[productModalWindow.id]"
                 @hide-modal="hideModal"
         />
     </div>
@@ -79,7 +86,10 @@
         },
         data() {
             return {
-                modalWindow: {
+                // Свойство, отвечающее за отображение расширенной карточки товара
+                // show - отвечает за отображение карточки
+                // id - хранит id товара, который необходимо отобразить в карточке
+                productModalWindow: {
                     show: false,
                     id: ""
                 },
@@ -146,27 +156,27 @@
             //isFiltered: bool
             filteredProducts() {
 
-                    //Копируем список товаров для дальнейших манипуляций
-                    let _products = [...this.products];
-                    //Статус позволяющий узнать, отфильтрованы ли товары в данный момент
-                    let isFiltered = false;
+                //Копируем список товаров для дальнейших манипуляций
+                let _products = [...this.products];
+                //Статус позволяющий узнать, отфильтрованы ли товары в данный момент
+                let isFiltered = false;
 
-                    if (this.filter.brand !== "Бренд") {
-                        _products = _products.filter(product => product.brand === this.filter.brand)
-                        isFiltered = true;
-                    }
+                if (this.filter.brand !== "Бренд") {
+                    _products = _products.filter(product => product.brand === this.filter.brand)
+                    isFiltered = true;
+                }
 
-                    if (this.filter.size !== "Размер") {
-                        _products = _products.filter(product => product.size == this.filter.size)
-                        isFiltered = true;
-                    }
+                if (this.filter.size !== "Размер") {
+                    _products = _products.filter(product => product.size == this.filter.size)
+                    isFiltered = true;
+                }
 
-                    if (this.filter.color !== "Цвет") {
-                        _products = _products.filter(product => product.color === this.filter.color)
-                        isFiltered = true;
-                    }
+                if (this.filter.color !== "Цвет") {
+                    _products = _products.filter(product => product.color === this.filter.color)
+                    isFiltered = true;
+                }
 
-                    return {_products, isFiltered};
+                return {_products, isFiltered};
             }
         },
         methods: {
@@ -176,12 +186,15 @@
                 this.filter.size = "Размер"
                 this.filter.color = "Цвет"
             },
+            //Метод для отображения расширенной карточки товара
+            //id использует для поиска по массиву товаров
             showModal(id) {
-                this.modalWindow.id = id
-                this.modalWindow.show = !this.modalWindow.show;
+                this.productModalWindow.id = id - 1
+                this.productModalWindow.show = !this.productModalWindow.show;
             },
+            //Метод для сокрытия карточки товара
             hideModal() {
-                this.modalWindow.show = !this.modalWindow.show;
+                this.productModalWindow.show = !this.productModalWindow.show;
             }
         }
     }
